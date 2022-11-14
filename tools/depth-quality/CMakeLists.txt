@@ -17,7 +17,7 @@ endif()
 
 include(../../common/CMakeLists.txt)
 
-SET(DELAYED 
+SET(DELAYED
     realsense2d.dll
     realsense2-gld.dll
     realsense2.dll
@@ -49,7 +49,7 @@ if(BUILD_GRAPHICAL_EXAMPLES)
                 ${CMAKE_CURRENT_SOURCE_DIR}/res/realsense-viewer.rc
                 ../../common/windows-app-bootstrap.cpp)
 
-        set_property(TARGET rs-depth-quality PROPERTY CXX_STANDARD 11)
+        set_property(TARGET rs-depth-quality PROPERTY CXX_STANDARD 14)
         source_group("Resources" FILES
                 ${CMAKE_CURRENT_SOURCE_DIR}/res/resource.h
                 ${CMAKE_CURRENT_SOURCE_DIR}/res/realsense-viewer.rc)
@@ -83,7 +83,7 @@ if(BUILD_GRAPHICAL_EXAMPLES)
         set_target_properties(rs-depth-quality PROPERTIES LINK_FLAGS "${LD_FLAGS_STR}")
 
     else()
-        add_executable(rs-depth-quality 
+        add_executable(rs-depth-quality
         ${RS_QUALITY_TOOL_CPP}
         ${ELPP_SOURCES}
         )
@@ -102,7 +102,7 @@ if(BUILD_GRAPHICAL_EXAMPLES)
         add_dependencies(rs-depth-quality libcurl)
         target_link_libraries(rs-depth-quality curl)
     endif()
-    
+
     target_link_libraries(rs-depth-quality ${DEPENDENCIES}
                                            ${GTK3_LIBRARIES}
                                            Threads::Threads
@@ -112,8 +112,8 @@ if(BUILD_GRAPHICAL_EXAMPLES)
         add_definitions(-DINTERNAL_FW)
         target_link_libraries(rs-depth-quality fw)
     endif()
-    
-    
+
+
 
 
     set_target_properties (rs-depth-quality PROPERTIES

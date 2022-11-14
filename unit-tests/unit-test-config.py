@@ -94,7 +94,7 @@ source_group( "Common Files" FILES ${ELPP_SOURCES} ${CATCH_FILES} ''' + dir + ''
     if not custom_main:
         handle.write( ' ' + dir + '/unit-test-default-main.cpp' )
     handle.write( ''' )
-set_property(TARGET ''' + testname + ''' PROPERTY CXX_STANDARD 11)
+set_property(TARGET ''' + testname + ''' PROPERTY CXX_STANDARD 14)
 target_link_libraries( ''' + testname + ''' ${DEPENDENCIES})
 
 set_target_properties( ''' + testname + ''' PROPERTIES FOLDER "Unit-Tests/''' + os.path.dirname( testdir ) + '''" )

@@ -51,7 +51,7 @@ if(BUILD_GRAPHICAL_EXAMPLES)
     ../../common/os.cpp
 )
 
-SET(DELAYED 
+SET(DELAYED
     realsense2d.dll
     realsense2-gld.dll
     realsense2.dll
@@ -134,7 +134,7 @@ if(DEFINED INTEL_OPENVINO_DIR  AND  IS_DIRECTORY ${INTEL_OPENVINO_DIR})
 
     include(../../wrappers/openvino/dl_vino_model.cmake)
     # Download model files -- these will go into build/tools/realsense-viewer, which is also
-    # where the sample is run from in Visual Studio 
+    # where the sample is run from in Visual Studio
 
     if(OPENVINO2019)
     dl_vino_model( "README.txt"                              "789e144d6cafa379c8437d2a6860829b6d935a8d" )
@@ -223,7 +223,7 @@ include_directories(
     )
 
 
-set_property(TARGET realsense-viewer PROPERTY CXX_STANDARD 11)
+set_property(TARGET realsense-viewer PROPERTY CXX_STANDARD 14)
 
 set(RS_VIEWER_LIBS ${GTK3_LIBRARIES} Threads::Threads realsense2-gl)
 
