@@ -540,7 +540,7 @@ namespace librealsense
                         throw std::runtime_error( "Could not allocate memory for new frame" );
                     memcpy( rs2_frame.pixels, dds_frame.raw_data.data(), dds_frame.size );
                     
-                    rs2_frame.deleter = []( void * ptr) { delete[] ptr; };
+                    rs2_frame.deleter = []( void * ptr) { delete[] (uint8_t *) ptr; };
                     rs2_frame.stride = dds_frame.size / dds_frame.height;
                     rs2_frame.bpp = rs2_frame.stride / dds_frame.width;
                     rs2_frame.timestamp = frame_counter * 1000.0 / p->get_framerate(); // TODO - timestamp from dds

@@ -65,6 +65,8 @@ target_include_directories( ${PROJECT_NAME} PRIVATE ${REPO_ROOT}/include )
 target_link_libraries( ${PROJECT_NAME} PRIVATE realdds )
 target_sources( ${PROJECT_NAME} PRIVATE ${PYREALDDS_FILES} )
 
+include("${REPO_ROOT}/include/librealsense2/utilities/string/CMakeLists.txt")
+
 include("${REPO_ROOT}/include/librealsense2/utilities/easylogging/easyloggingpp.cmake")
 target_sources( ${PROJECT_NAME} PRIVATE ${ELPP_SOURCE_FILES} )
 source_group( "EasyLogging++" FILES ${ELPP_SOURCE_FILES} )

@@ -54,11 +54,13 @@ public:
         flexible_msg msg;
         eprosima::fastdds::dds::SampleInfo sample;
     };
+    typedef std::function< void( data_t & ) > on_data_callback;
 
 private:
     std::queue< data_t > _data;
     std::condition_variable _data_cv;
     std::mutex _data_mutex;
+    on_data_callback _on_data;
 
 public:
     flexible_reader( std::shared_ptr< dds_topic > const & topic );
@@ -68,6 +70,10 @@ public:
     }
 
     std::string const & name() const;
+
+    void wait_for_writers( int n_writers, std::chrono::seconds timeout );
+
+    void on_data( on_data_callback callback ) { _on_data = std::move( callback ); }
 
     // Block until data is available
     void wait_for_data();
@@ -84,6 +90,7 @@ public:
 private:
     void on_subscription_matched( eprosima::fastdds::dds::SubscriptionMatchedStatus const & );
     void on_data_available();
+    data_t pop_data();
 };
 
 

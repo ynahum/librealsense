@@ -6,7 +6,7 @@
 
 #include "flexible.h"
 
-#include <string>
+#include <librealsense2/utilities/string/stringref.h>
 #include <memory>
 #include <vector>
 
@@ -84,6 +84,7 @@ public:
     flexible_msg( data_format format, nlohmann::json const &, uint32_t version = 0 );
 
     nlohmann::json json_data() const;
+    utilities::string::stringref json_string() const;
 
     // Get the custom data with casting to the desired type
     // Syntax: auto stream_info = msg.custom_data< STREAM_INFO >();

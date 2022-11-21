@@ -22,6 +22,7 @@ Copyright(c) 2022 Intel Corporation. All Rights Reserved. */
 #include <realdds/dds-utilities.h>
 #include <realdds/dds-log-consumer.h>
 
+#include <librealsense2/utilities/string/json.h>
 #include <librealsense2/utilities/easylogging/easyloggingpp.h>
 #include <fastdds/dds/domain/qos/DomainParticipantQos.hpp>
 #include <fastdds/dds/domain/DomainParticipant.hpp>
@@ -89,26 +90,22 @@ PYBIND11_MODULE(NAME, m) {
     eprosima::fastdds::dds::Log::RegisterConsumer( realdds::log_consumer::create() );
     eprosima::fastdds::dds::Log::SetVerbosity( eprosima::fastdds::dds::Log::Error );
 
-    m.def( "debug", []( bool enable, std::string const & nested ) {
-        if( enable )
-        {
-            //eprosima::fastdds::dds::Log::SetVerbosity( eprosima::fastdds::dds::Log::Info );
-        }
-        else
-        {
-            //eprosima::fastdds::dds::Log::SetVerbosity( eprosima::fastdds::dds::Log::Error );
-        }
-        el::Logger * logger = el::Loggers::getLogger( "librealsense" );
-        auto configs = logger->configurations();
-        configs->set( el::Level::Warning, el::ConfigurationType::ToStandardOutput, enable ? "true" : "false" );
-        configs->set( el::Level::Info, el::ConfigurationType::ToStandardOutput, enable ? "true" : "false" );
-        configs->set( el::Level::Debug, el::ConfigurationType::ToStandardOutput, enable ? "true" : "false" );
-        std::string format = "-%levshort- %datetime{%H:%m:%s.%g} %msg (%fbase:%line [%thread])";
-        if( ! nested.empty() )
-            format = '[' + nested + "] " + format;
-        configs->setGlobally( el::ConfigurationType::Format, format );
-        logger->reconfigure();
-    } );
+    m.def(
+        "debug",
+        []( bool enable, std::string const & nested ) {
+            el::Logger * logger = el::Loggers::getLogger( "librealsense" );
+            auto configs = logger->configurations();
+            configs->set( el::Level::Warning, el::ConfigurationType::ToStandardOutput, enable ? "true" : "false" );
+            configs->set( el::Level::Info, el::ConfigurationType::ToStandardOutput, enable ? "true" : "false" );
+            configs->set( el::Level::Debug, el::ConfigurationType::ToStandardOutput, enable ? "true" : "false" );
+            std::string format = "-%levshort- %datetime{%H:%m:%s.%g} %msg (%fbase:%line [%thread])";
+            if( ! nested.empty() )
+                format = '[' + nested + "] " + format;
+            configs->setGlobally( el::ConfigurationType::Format, format );
+            logger->reconfigure();
+        },
+        py::arg( "enable" ),
+        py::arg( "nested-prefix" ) = "" );
 
     using realdds::dds_guid;
     py::class_< dds_guid >( m, "guid" )
@@ -336,7 +333,7 @@ PYBIND11_MODULE(NAME, m) {
                   return data;
               } )
         .def( "create_topic", &device_info::create_topic )
-        .attr( "TOPIC_NAME" ) = device_info::TOPIC_NAME;
+        .attr( "TOPIC_NAME" ) = py::str( device_info::TOPIC_NAME );
 
     using realdds::topics::flexible_msg;
     using raw_flexible = realdds::topics::raw::flexible;
@@ -371,6 +368,14 @@ PYBIND11_MODULE(NAME, m) {
     m.def( "timestr", []( dds_nsec dt, timestr::rel_t, timestr::no_suffix_t ) { return timestr( dt, timestr::rel, timestr::no_suffix ).to_string(); } );
     m.def( "timestr", []( dds_nsec t1, dds_nsec t2 ) { return timestr( t1, t2 ).to_string(); } );
     m.def( "timestr", []( dds_nsec t1, dds_nsec t2, timestr::no_suffix_t ) { return timestr( t1, t2, timestr::no_suffix ).to_string(); } );
+
+    m.def(
+        "shorten_json_string",
+        []( std::string const & str, int max_length ) {
+            return utilities::string::shorten_json_string( str, max_length ).to_string();
+        },
+        py::arg( "str" ),
+        py::arg( "max_length" ) = 96 );
 
     typedef std::shared_ptr< dds_topic > flexible_msg_create_topic( std::shared_ptr< dds_participant > const &,
                                                                     char const * );

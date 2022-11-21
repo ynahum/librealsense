@@ -3,6 +3,8 @@
 
 add_subdirectory(dds-sniffer)
 add_subdirectory(dds-server)
+add_subdirectory(poc-e)
+add_subdirectory(poc-h)
 
 if (BUILD_PYTHON_BINDINGS)
     add_subdirectory(realdds-py)

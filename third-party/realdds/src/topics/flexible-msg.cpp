@@ -15,6 +15,7 @@
 
 #include <third-party/json.hpp>
 using nlohmann::json;
+using utilities::string::stringref;
 
 
 namespace realdds {
@@ -114,6 +115,16 @@ json flexible_msg::json_data() const
         return json::from_cbor( _data.begin(), _data.end() );
     }
     DDS_THROW( runtime_error, "non-json flexible data is still unsupported" );
+}
+
+
+stringref flexible_msg::json_string() const
+{
+    if( _data_format == data_format::JSON )
+        return { reinterpret_cast< char const * >( _data.data() ), _data.size() };
+    if( _data_format == data_format::CBOR )
+        return { "CBOR", 4 };
+    return { "CUSTOM", 6 };
 }
 
 

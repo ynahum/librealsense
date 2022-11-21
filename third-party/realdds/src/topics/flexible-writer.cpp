@@ -41,7 +41,7 @@ void flexible_writer::wait_for_readers( int n_readers, std::chrono::seconds time
     while( _n_readers < n_readers )
     {
         if( timer.has_expired() )
-            DDS_THROW( runtime_error, "timed out waiting for " + std::to_string( n_readers ) + " readers" );
+            DDS_THROW( runtime_error, name() + " timed out waiting for " + std::to_string( n_readers ) + " readers" );
         std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
     }
 }
