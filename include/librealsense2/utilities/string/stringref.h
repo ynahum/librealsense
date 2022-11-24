@@ -6,6 +6,7 @@
 #include <string>
 #include <ostream>
 #include <cassert>
+#include <cstring>
 
 
 namespace utilities {
@@ -51,7 +52,7 @@ public:
     {
     }
     explicit stringref( char const * str )
-        : stringref( str, strlen( str ) )
+        : stringref( str, std::strlen( str ) )
     {
     }
     stringref( std::string const & str )
