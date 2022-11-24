@@ -4,10 +4,10 @@
 SET(STRING_TARGETS "${CMAKE_CURRENT_LIST_DIR}/split.h"
         "${CMAKE_CURRENT_LIST_DIR}/string-utilities.h"
         "${CMAKE_CURRENT_LIST_DIR}/ellipsis.h"
-        "${CMAKE_CURRENT_LIST_DIR}/stringref.h"
+        "${CMAKE_CURRENT_LIST_DIR}/slice.h"
         "${CMAKE_CURRENT_LIST_DIR}/chrono.h"
-        "${CMAKE_CURRENT_LIST_DIR}/json.h"
-        "${CMAKE_CURRENT_LIST_DIR}/json.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/shorten-json-string.h"
+        "${CMAKE_CURRENT_LIST_DIR}/shorten-json-string.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/trim-newlines.h")
 
 if(WIN32)

@@ -15,7 +15,6 @@
 
 #include <third-party/json.hpp>
 using nlohmann::json;
-using utilities::string::stringref;
 
 
 namespace realdds {
@@ -118,7 +117,7 @@ json flexible_msg::json_data() const
 }
 
 
-stringref flexible_msg::json_string() const
+utilities::string::slice flexible_msg::json_string() const
 {
     if( _data_format == data_format::JSON )
         return { reinterpret_cast< char const * >( _data.data() ), _data.size() };
