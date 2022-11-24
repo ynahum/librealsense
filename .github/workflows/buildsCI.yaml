@@ -66,15 +66,12 @@ jobs:
         cmake --build . --config ${{env.LRS_RUN_CONFIG}} -- -m    
      
     - name: Test
-      shell: bash -vx --noprofile --norc -e -o pipefail {0}
       id: test-step
       # We set continue-on-error: true as a workaround for not skipping the upload log step on failure,
       # The final step will check the return value from the test step and decide if to fail/pass the job
       continue-on-error: true 
       working-directory: ${{env.WIN_BUILD_DIR}}/${{env.LRS_RUN_CONFIG}}
-      run: |
-        ls -la
-        ./live-test.exe -d yes -i '[software-device]'
+      run: live-test -d yes -i '[software-device]'
        
     - name: Upload RS log artifact
       uses: actions/upload-artifact@v2
