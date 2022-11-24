@@ -58,7 +58,6 @@ jobs:
         cmake ${LRS_SRC_DIR} -G "Visual Studio 16 2019" -DPYTHON_EXECUTABLE=${{env.PYTHON_PATH}} -DBUILD_PYTHON_BINDINGS=true -DPYBIND11_PYTHON_VERSION=3.8 -DBUILD_UNIT_TESTS=false -DBUILD_LEGACY_LIVE_TEST=true -DBUILD_EXAMPLES=false -DBUILD_TOOLS=true -DBUILD_WITH_TM2=false -DFORCE_RSUSB_BACKEND=true -DBUILD_WITH_DDS=true
 
     - name: Build
-      # Build your program with the given configuration
       shell: bash
       run: |
         cd ${{env.WIN_BUILD_DIR}}
@@ -67,12 +66,15 @@ jobs:
         cmake --build . --config ${{env.LRS_RUN_CONFIG}} -- -m    
      
     - name: Test
+      shell: bash
       id: test-step
       # We set continue-on-error: true as a workaround for not skipping the upload log step on failure,
       # The final step will check the return value from the test step and decide if to fail/pass the job
       continue-on-error: true 
       working-directory: ${{env.WIN_BUILD_DIR}}/${{env.LRS_RUN_CONFIG}}
-      run: ./live-test.exe -d yes -i '[software-device]'
+      run: |
+        ls -la
+        ./live-test.exe -d yes -i '[software-device]'
        
     - name: Upload RS log artifact
       uses: actions/upload-artifact@v2
