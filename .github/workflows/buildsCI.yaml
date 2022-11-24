@@ -66,7 +66,7 @@ jobs:
         cmake --build . --config ${{env.LRS_RUN_CONFIG}} -- -m    
      
     - name: Test
-      shell: bash
+      shell: bash -vx --noprofile --norc -e -o pipefail {0}
       id: test-step
       # We set continue-on-error: true as a workaround for not skipping the upload log step on failure,
       # The final step will check the return value from the test step and decide if to fail/pass the job
