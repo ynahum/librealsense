@@ -72,11 +72,12 @@ jobs:
       # We set continue-on-error: true as a workaround for not skipping the upload log step on failure,
       # The final step will check the return value from the test step and decide if to fail/pass the job
       continue-on-error: true 
+      working-directory: ${{env.WIN_BUILD_DIR}}/${{env.LRS_RUN_CONFIG}}
       run: |
-       export LRS_LOG_LEVEL="DEBUG";
-       cd  ${{env.WIN_BUILD_DIR}}/${{env.LRS_RUN_CONFIG}}
+       export LRS_LOG_LEVEL="DEBUG"
+       pwd
        ls
-       ./live-test.exe -d yes -i [software-device]  
+       ./live-test.exe -d yes -i '[software-device]'
        
     - name: Upload RS log artifact
       uses: actions/upload-artifact@v2
