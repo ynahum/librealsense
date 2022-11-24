@@ -45,7 +45,9 @@ struct ellipsis
     operator bool() const { return is_valid(); }
 
     std::string to_string() const {
-        return( std::ostringstream() << *this ).str();
+        std::ostringstream os;
+        os << *this;
+        return os.str();
     }
 };
 
