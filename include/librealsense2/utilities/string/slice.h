@@ -17,10 +17,10 @@ namespace string {
 // std::string_view, except it can be expanded to be non-const, too.
 // 
 // This is meant to point into an existing string and have a short life-time. If the underlying memory is removed, e.g.:
-//      stringref foo()
+//      slice foo()
 //      {
 //          std::string bar = "haha";
-//          return stringref(bar);
+//          return slice(bar);
 //      }
 // Not good!
 // 
@@ -29,7 +29,7 @@ namespace string {
 // This can come in very useful when wanting to break a string into parts but without incurring allocations or copying,
 // or changing of the original string contents (like strtok does), or when the original memory is not null-terminated.
 //
-class stringref
+class slice
 {
 public:
     //typedef std::string::const_iterator const_iterator;
@@ -41,25 +41,25 @@ private:
 	const_iterator _begin, _end;
 
 public:
-    stringref( const_iterator begin, const_iterator end )
+    slice( const_iterator begin, const_iterator end )
         : _begin( begin )
         , _end( end )
     {
         assert( begin <= end );
     }
-    stringref( char const * str, size_type length )
-        : stringref( str, str + length )
+    slice( char const * str, size_type length )
+        : slice( str, str + length )
     {
     }
-    explicit stringref( char const * str )
-        : stringref( str, std::strlen( str ) )
+    explicit slice( char const * str )
+        : slice( str, std::strlen( str ) )
     {
     }
-    stringref( std::string const & str )
-        : stringref( str.data(), str.length() )
+    slice( std::string const & str )
+        : slice( str.data(), str.length() )
     {
     }
-    stringref()
+    slice()
         : _begin( nullptr )
         , _end( nullptr )
     {
@@ -79,7 +79,7 @@ public:
 };
 
 
-inline std::ostream & operator<<( std::ostream & os, stringref const & str )
+inline std::ostream & operator<<( std::ostream & os, slice const & str )
 {
     return os.write( str.begin(), str.length() );
 }

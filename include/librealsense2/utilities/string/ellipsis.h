@@ -3,12 +3,38 @@
 
 #pragma once
 
-#include "stringref.h"
+#include "slice.h"
 #include <sstream>
 
 
 namespace utilities {
 namespace string {
+
+
+// Pair of slices, from one or two different sources.
+// These can be put together using constructs like ellipsis...
+//
+struct twoslice
+{
+    typedef slice::size_type size_type;
+
+    slice first, second;
+
+    twoslice( slice const & f, slice const & s )
+        : first( f )
+        , second( s )
+    {
+    }
+    twoslice() {}
+
+    size_type length() const { return first.length() + second.length(); }
+
+    bool empty() const { return ! length(); }
+
+    // empty is also invalid, but invalid does not necessarily mean empty!
+    bool is_valid() const { return ! first; }
+    operator bool() const { return is_valid(); }
+};
 
 
 // Output to ostream two strings separated by " ... ". E.g.:
@@ -21,28 +47,17 @@ namespace string {
 //     - if the left is empty, operator bool() will return false
 // So, returning an empty ellipsis is like returning an invalid state.
 //
-struct ellipsis
+struct ellipsis : twoslice
 {
-    stringref first, second;
+    static constexpr size_type const extra_length = 5;  // " ... "
 
-    ellipsis( stringref const & f, stringref const & s )
-        : first( f )
-        , second( s )
+    size_type length() const
     {
-    }
-    ellipsis() {}
-
-    stringref::size_type length() const
-    {
-        stringref::size_type l = first.length() + second.length();
+        size_type l = twoslice::length();
         if( l )
-            l += 5;
+            l += extra_length;
         return l;
     }
-
-    bool empty() const { return ! first; }
-    bool is_valid() const { return ! empty(); }
-    operator bool() const { return is_valid(); }
 
     std::string to_string() const {
         std::ostringstream os;

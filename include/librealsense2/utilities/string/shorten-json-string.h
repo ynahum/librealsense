@@ -24,7 +24,7 @@ namespace string {
 // When more than one inside block exists, all are evaluated recursively to find the longest
 // representation possible.
 //
-string::ellipsis shorten_json_string( string::stringref const & str, size_t max_length = 96 );
+ellipsis shorten_json_string( slice const & str, size_t max_length = 96 );
 
 
 }  // namespace string
