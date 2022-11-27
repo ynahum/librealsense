@@ -74,10 +74,10 @@ jobs:
       continue-on-error: true 
       run: |
        set -x  # activate debugging
-       export LRS_LOG_LEVEL="DEBUG";
+       export LRS_LOG_LEVEL="DEBUG"
        cd  ${{env.WIN_BUILD_DIR}}/${{env.LRS_RUN_CONFIG}}
-       ls
-       ./live-test.exe -d yes -i [software-device]  
+       ls -ls ${{env.WIN_BUILD_DIR}}/${{env.LRS_RUN_CONFIG}}
+       ${{env.WIN_BUILD_DIR}}/${{env.LRS_RUN_CONFIG}}/live-test.exe -d yes -i [software-device]
        
     - name: Upload RS log artifact
       uses: actions/upload-artifact@v2
