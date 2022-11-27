@@ -2,8 +2,10 @@
 #include "unit-tests-common.h"
 #include <iostream>
 
-int main(int argc, char* const argv[])
+int main(int argc, char* const argv[]) try
 {
+    std::cout << "---------------------------------------------------------------------------------" << std::endl;
+    
     command_line_params::instance(argc, argv);
 
     std::vector<char*> new_argvs;
@@ -47,4 +49,12 @@ int main(int argc, char* const argv[])
         return EXIT_FAILURE;
     }
     return result;
+}
+catch( std::exception const & e )
+{
+    std::cerr << "caught exception: " << e.what() << std::endl;
+}
+catch( ... )
+{
+    std::cerr << "unknown exception caught!" << std::endl;
 }
