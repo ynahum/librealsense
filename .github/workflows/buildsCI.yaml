@@ -73,6 +73,7 @@ jobs:
       # The final step will check the return value from the test step and decide if to fail/pass the job
       continue-on-error: true 
       run: |
+       set -x  # activate debugging
        export LRS_LOG_LEVEL="DEBUG";
        cd  ${{env.WIN_BUILD_DIR}}/${{env.LRS_RUN_CONFIG}}
        ls
