@@ -1,19 +1,19 @@
 set (unit_tests_sources
-    unit-tests-live.cpp
-    unit-tests-regressions.cpp
-    unit-tests-post-processing.cpp
-    unit-tests-post-processing.h
+    #unit-tests-live.cpp
+    #unit-tests-regressions.cpp
+    #unit-tests-post-processing.cpp
+    #unit-tests-post-processing.h
     unit-tests-main.cpp
-    unit-tests-common.h
-    unit-tests-post-processing-from-bag.cpp
-    unit-test-long.cpp
-    catch.h
-    approx.h
+    #unit-tests-common.h
+    #unit-tests-post-processing-from-bag.cpp
+    #unit-test-long.cpp
+    #catch.h
+    #approx.h
 )
 
 add_executable(live-test ${unit_tests_sources})
 set_property(TARGET live-test PROPERTY CXX_STANDARD 11)
-target_link_libraries(live-test realsense2 Threads::Threads)
+target_link_libraries(live-test ${DEPENDENCIES} Threads::Threads)
 
 set_target_properties (live-test PROPERTIES
     FOLDER "Unit-Tests"
