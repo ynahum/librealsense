@@ -191,6 +191,14 @@ const std::vector< std::pair<std::string, std::string>> ppf_test_cases = {
 { "1551263177558",  "D435_DS(2)_Spat(A:0.7/D:25/I:2)_Temp(A:0.6/D:15/P:6))_HoleFill(1)" },
 };
 
+
+
+
+#if 0
+
+
+
+
 // The test is intended to check the results of filters applied on a sequence of frames, specifically the temporal filter
 // that preserves an internal state. The test utilizes rosbag recordings
 TEST_CASE("Post-Processing Filters sequence validation", "[software-device][post-processing-filters]")
@@ -740,3 +748,9 @@ TEST_CASE("Align Processing Block", "[live][pipeline][post-processing-filters][!
         }
     }
 }
+
+
+
+
+
+#endif
