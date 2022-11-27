@@ -2,6 +2,11 @@
 #include "unit-tests-common.h"
 #include <iostream>
 
+TEST_CASE("DUMMY", "[live]")
+{
+    REQUIRE( true );
+}
+
 int main(int argc, char* const argv[]) try
 {
     std::cout << "---------------------------------------------------------------------------------" << std::endl;
