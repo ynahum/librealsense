@@ -195,8 +195,8 @@ const std::vector< std::pair<std::string, std::string>> ppf_test_cases = {
 // that preserves an internal state. The test utilizes rosbag recordings
 TEST_CASE("Post-Processing Filters sequence validation", "[software-device][post-processing-filters]")
 {
-    rs2::context ctx;
 #if 0
+    rs2::context ctx;
     REQUIRE( make_context(SECTION_FROM_TEST_NAME, &ctx));
 
     if (make_context(SECTION_FROM_TEST_NAME, &ctx))
