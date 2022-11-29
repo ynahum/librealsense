@@ -114,6 +114,7 @@ namespace librealsense
         : _devices_changed_callback( nullptr, []( rs2_devices_changed_callback* ) {} )
     {
         static bool version_logged = false;
+        std::cout << "context @ " << std::hex << this << " created" << std::endl;
         if( ! version_logged )
         {
             version_logged = true;
@@ -132,6 +133,7 @@ namespace librealsense
         switch(type)
         {
         case backend_type::standard:
+            std::cout << "standard context created" << std::endl;
             _backend = platform::create_backend();
 #ifdef BUILD_WITH_DDS
             if( ! _dds_participant.instance()->is_valid() )
@@ -140,9 +142,11 @@ namespace librealsense
 #endif //BUILD_WITH_DDS
             break;
         case backend_type::record:
+            std::cout << "record context created" << std::endl;
             _backend = std::make_shared<platform::record_backend>(platform::create_backend(), filename, section, mode);
             break;
         case backend_type::playback:
+            std::cout << "playback context created" << std::endl;
             _backend = std::make_shared<platform::playback_backend>(filename, section, min_api_version);
             break;
             // Strongly-typed enum. Default is redundant
@@ -159,6 +163,7 @@ namespace librealsense
         : context()
     {
         json settings = json_settings ? json::parse( json_settings ) : json();
+          std::cout << "json context created with " << settings.dump() << std::endl;
 
         _backend = platform::create_backend();  // standard type
 
