@@ -819,8 +819,10 @@ namespace librealsense
                 //if( mask & RS2_PRODUCT_LINE_D400 )
                     //if( dev.product_line == "D400" )
                     {
+#if 0
                         std::shared_ptr< device_info > info = std::make_shared< dds_device_info >( ctx, dev );
                         list.push_back( info );
+#endif
                     }
                 return true;
             } );
