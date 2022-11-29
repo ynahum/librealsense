@@ -64,7 +64,7 @@ public:
 };
 
 template< class T > std::weak_ptr< T > shared_ptr_singleton< T >::_singleton;
-template< class T > std::mutex< T > shared_ptr_singleton< T >::_mutex;
+//template< class T > std::mutex< T > shared_ptr_singleton< T >::_mutex;
 
 
 }  // namespace utilities
