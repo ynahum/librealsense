@@ -133,7 +133,8 @@ namespace librealsense
         {
         case backend_type::standard:
             _backend = platform::create_backend();
-#ifdef BUILD_WITH_DDS
+            std::cout << "participant 1" << std::endl;
+#if 0 //def BUILD_WITH_DDS
             if( ! _dds_participant.instance()->is_valid() )
                 _dds_participant->init( 0, "librealsense" );
             _dds_watcher.instance( _dds_participant.get() );
@@ -167,9 +168,11 @@ namespace librealsense
         _device_watcher = _backend->create_device_watcher();
         assert( _device_watcher->is_stopped() );
 
-#if 0 //def BUILD_WITH_DDS
+#ifdef BUILD_WITH_DDS
         if( utilities::json::get< bool >( settings, "dds-discovery", true ) )
         {
+            std::cout << "participant 2" << std::endl;
+#if 0
             if( ! _dds_participant.instance()->is_valid() )
             {
                 _dds_participant->init(
@@ -192,6 +195,7 @@ namespace librealsense
                 start_dds_device_watcher();
             }
             //_dds_backend = ...; TODO
+#endif
         }
 #endif //BUILD_WITH_DDS
     }
@@ -765,7 +769,7 @@ namespace librealsense
 
         if ( _device_watcher )
             _device_watcher->stop(); 
-#ifdef BUILD_WITH_DDS
+#if 0 //def BUILD_WITH_DDS
         if( _dds_watcher )
             _dds_watcher->stop();
 #endif //BUILD_WITH_DDS
@@ -813,7 +817,7 @@ namespace librealsense
             std::copy(begin(sr300_devices), end(sr300_devices), std::back_inserter(list));
         }
 
-#ifdef BUILD_WITH_DDS
+#if 0 // def BUILD_WITH_DDS
         if( _dds_watcher )
             _dds_watcher->foreach_device( [&]( std::shared_ptr< realdds::dds_device > const & dev ) -> bool {
                 //if( mask & RS2_PRODUCT_LINE_D400 )
@@ -937,11 +941,13 @@ namespace librealsense
 #ifdef BUILD_WITH_DDS
     void context::start_dds_device_watcher()
     {
+#if 0
         // TODO Here we should add DDS devices to the `on_device_changed`parameters
         // on_device_changed(old, curr, _playback_devices, _playback_devices);
         _dds_watcher->on_device_added( [this]( std::shared_ptr< realdds::dds_device > const & dev ) { dev->run(); } );
         _dds_watcher->on_device_removed( [this]( std::shared_ptr< realdds::dds_device > const & dev ) {} );
         _dds_watcher->start();
+#endif
     }
 #endif //BUILD_WITH_DDS
 
@@ -966,7 +972,7 @@ namespace librealsense
         if (_devices_changed_callback == nullptr && _devices_changed_callbacks.size() == 0) // There are no register callbacks any more _device_watcher can be stopped
         {
             _device_watcher->stop();
-#ifdef BUILD_WITH_DDS
+#if 0 // def BUILD_WITH_DDS
             if( _dds_watcher )
                 _dds_watcher->stop();
 #endif //BUILD_WITH_DDS
