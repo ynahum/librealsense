@@ -167,7 +167,7 @@ namespace librealsense
         _device_watcher = _backend->create_device_watcher();
         assert( _device_watcher->is_stopped() );
 
-#ifdef BUILD_WITH_DDS
+#if 0 //def BUILD_WITH_DDS
         if( utilities::json::get< bool >( settings, "dds-discovery", true ) )
         {
             if( ! _dds_participant.instance()->is_valid() )
@@ -379,7 +379,7 @@ namespace librealsense
         return std::make_shared<platform_camera>(ctx, _uvcs, this->get_device_data(), register_device_notifications);
     }
 
-#ifdef BUILD_WITH_DDS
+#if 0 //def BUILD_WITH_DDS
     struct sid_index
     {
         int sid;    // Stream ID; assigned based on the stream TYPE, really
