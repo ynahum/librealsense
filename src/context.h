@@ -7,7 +7,7 @@
 #include "backend.h"
 #include "mock/recorder.h"
 #include "core/streaming.h"
-#include <utilities/shared-ptr-singleton.h>
+//#include <utilities/shared-ptr-singleton.h>
 
 #include <vector>
 #include <third-party/json_fwd.hpp>
@@ -162,8 +162,10 @@ namespace librealsense
         std::map<std::string, std::weak_ptr<device_info>> _playback_devices;
         std::map<uint64_t, devices_changed_callback_ptr> _devices_changed_callbacks;
 #ifdef BUILD_WITH_DDS
-        utilities::shared_ptr_singleton< realdds::dds_participant > _dds_participant;  // common to all contexts!
-        utilities::shared_ptr_singleton< realdds::dds_device_watcher > _dds_watcher;
+        std::shared_ptr< realdds::dds_participant > _dds_participant;
+        static std::weak_ptr< realdds::dds_participant > _dds_participant_singleton;  // common to all contexts!
+        std::shared_ptr< realdds::dds_device_watcher > _dds_watcher;
+        static std::weak_ptr< realdds::dds_device_watcher > _dds_watcher_singleton;
         void start_dds_device_watcher();
 #endif
 
