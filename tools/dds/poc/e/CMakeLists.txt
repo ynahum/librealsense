@@ -4,7 +4,6 @@
 project(poc-e)
 
 set( SRC
-    poc-e.h
     poc-e.cpp
 
     ../payload/op-payload.h
