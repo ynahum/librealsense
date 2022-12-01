@@ -2,14 +2,16 @@
 // Copyright(c) 2022 Intel Corporation. All Rights Reserved.
 
 #include <realdds/dds-participant.h>
-#include <realdds/topics/flexible/flexible-reader.h>
-#include <realdds/topics/flexible/flexible-writer.h>
 #include <realdds/dds-utilities.h>
 #include <realdds/dds-time.h>
 #include <realdds/dds-log-consumer.h>
 
+#include <payload/op-reader.h>
+#include <payload/op-writer.h>
+
+#include <payload/stream-reader.h>
+
 #include <librealsense2/utilities/easylogging/easyloggingpp.h>
-#include <librealsense2/utilities/json.h>
 
 #include <tclap/CmdLine.h>
 #include <tclap/ValueArg.h>
@@ -23,24 +25,21 @@ using realdds::timestr;
 
 
 dds_nsec
-calc_time_offset( realdds::topics::flexible_writer & h2e, realdds::topics::flexible_reader & e2h, int const n_reps = 5 )
+calc_time_offset( poc::op_writer & h2e, poc::op_reader & e2h, int const n_reps = 5 )
 {
     int64_t avg_time_offset = 0;
-    for( int i = 0; i < n_reps; ++i )
+    for( uint64_t i = 0; i < n_reps; ++i )
     {
         auto t0_ = realdds::now().to_ns();
-        h2e.write( { { "op", "ping" }, { "id", i }, { "timestamp", t0_ } } );
+        h2e.write( poc::op_payload::SYNC, i, t0_ );
         auto data = e2h.read( std::chrono::seconds( 3 ) );
-        auto json = data.msg.json_data();
-        auto t0 = utilities::json::get< dds_nsec >( json, "originate" );
-        auto t1 = utilities::json::get< dds_nsec >( json, "receive" );
-        //t1 += dds_nsec(5000000);  // 5 ms
-        auto t2_ = utilities::json::get< dds_nsec >( json, "transmit" );
-        auto t2 = data.sample.source_timestamp.to_ns();
-        //t2 += dds_nsec( 5000000 );
-        //t2_ += dds_nsec( 5000000 );
-        auto t3 = data.sample.reception_timestamp.to_ns();
-        auto t3_ = realdds::now().to_ns();
+        //dds_nsec t0_ = data.msg._data[0];  // before H app send
+        dds_nsec t0 = data.msg._data[1];   // "originate" H DDS send time
+        dds_nsec t1 = data.msg._data[2];   // "receive" E receive time
+        //dds_nsec t2_ = data.msg._data[3];   // E app send time
+        dds_nsec t2 = data.sample.source_timestamp.to_ns();  // "transmit" E DDS send time
+        dds_nsec t3 = data.sample.reception_timestamp.to_ns();
+        dds_nsec t3_ = realdds::now().to_ns();
 
 #define RJ(N,S) std::setw(N) << std::right << (S)
 
@@ -53,7 +52,7 @@ calc_time_offset( realdds::topics::flexible_writer & h2e, realdds::topics::flexi
                                                            << "         " << timestr(t3,t0) << "   " << RJ(13, timestr(t3_,t3) ) << "\n"
             );
 
-        auto time_offset = ( t1 - t0 + t2_ - t3 );
+        auto time_offset = ( t1 - t0 + t2 - t3 );
         time_offset /= 2;
         LOG_DEBUG( "   time-offset= " << timestr( time_offset, timestr::rel ) << "    round-trip= " << timestr( t3_, t0_ ) );
         avg_time_offset += time_offset;
@@ -111,13 +110,13 @@ int main( int argc, char** argv ) try
     auto participant = std::make_shared< realdds::dds_participant >();
     participant->init( domain, "poc-h" );
 
-    realdds::topics::flexible_writer h2e( participant, "h2e" );
+    poc::op_writer h2e( participant, "h2e" );
     h2e.wait_for_readers( 1 );
     if( command_arg.isSet() )
     {
         if( command_arg.getValue() == "exit" )
         {
-            h2e.write( { { "op", "exit" } } );
+            h2e.write( poc::op_payload::EXIT, 0 );
             h2e.wait_for_readers( 0 );
             exit( 0 );
         }
@@ -125,7 +124,7 @@ int main( int argc, char** argv ) try
         exit( 1 );
     }
 
-    realdds::topics::flexible_reader e2h( participant, "e2h" );
+    poc::op_reader e2h( participant, "e2h" );
 
     auto time_offset = calc_time_offset( h2e, e2h );
 
@@ -148,9 +147,8 @@ int main( int argc, char** argv ) try
         realdds::dds_time first, last;
     };
     auto process_frame = [time_offset]( std::shared_ptr< framedata > const & fdata,
-                                        realdds::topics::flexible_reader::data_t const & mdata ) {
-        auto json = mdata.msg.json_data();
-        auto number = utilities::json::get< int64_t >( json, "number" );
+                                        poc::stream_reader::data_t const & mdata ) {
+        auto number = mdata.msg._frame_number;
         //
         // drops
         if( fdata->count && fdata->last_number + 1 != number )
@@ -177,7 +175,7 @@ int main( int argc, char** argv ) try
 
     using namespace std::placeholders;  // _1, etc...
 
-    realdds::topics::flexible_reader depth( participant, "depth" );
+    poc::stream_reader depth( participant, "depth" );
     auto depth_data = std::make_shared< framedata >();
     depth.on_data( std::bind( process_frame, depth_data, _1 ));
     depth.wait_for_writers( 1, std::chrono::seconds( 3 ) );
@@ -186,7 +184,6 @@ int main( int argc, char** argv ) try
     std::this_thread::sleep_for( std::chrono::seconds( 3 ) );
 
     // Dump it all out somehow
-
 
     return EXIT_SUCCESS;
 }

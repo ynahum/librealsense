@@ -1,0 +1,30 @@
+// License: Apache 2.0. See LICENSE file in root directory.
+// Copyright(c) 2022 Intel Corporation. All Rights Reserved.
+
+module realsense {
+
+const uint32 MAX_IMAGE_WIDTH = 720;
+const uint32 MAX_IMAGE_HEIGHT = 480;
+const uint32 MAX_BYTES_PER_PIXEL = 3;
+const uint32 MAX_IMAGE_PAYLOAD_SIZE = MAX_IMAGE_WIDTH * MAX_IMAGE_HEIGHT * MAX_BYTES_PER_PIXEL;
+
+@final
+@verbatim (language="comment", text="Generic type for embedded to host topics")
+struct STREAM_payload {
+    uint64 stream_id;
+    uint64 frame_number;
+    sequence<octet, MAX_IMAGE_PAYLOAD_SIZE> payload;
+};
+
+@final
+@verbatim (language="comment", text="Generic type for host to embedded echo topics")
+struct OP_payload {
+    uint64 op;
+    uint64 id;
+    uint64 data[5];
+};
+
+};  // module realsense
+
+
+
