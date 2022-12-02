@@ -22,6 +22,7 @@ dds_device_watcher::dds_device_watcher( std::shared_ptr< dds_participant > const
     : _device_info_topic(
         new dds_topic_reader( topics::device_info::create_topic( participant, topics::device_info::TOPIC_NAME ) ) )
     , _participant( participant )
+#if 0
     , _active_object( [this]( dispatcher::cancellable_timer timer ) {
 
         eprosima::fastrtps::Duration_t const one_second = { 1, 0 };
@@ -58,6 +59,7 @@ dds_device_watcher::dds_device_watcher( std::shared_ptr< dds_participant > const
             }
         }
     } )
+#endif
 {
     if( ! _participant->is_valid() )
         DDS_THROW( runtime_error, "participant was not initialized" );
@@ -73,7 +75,7 @@ void dds_device_watcher::start()
         // it takes time and keeps the 'dds_device_server' busy
         init();
     }
-    _active_object.start();
+    //_active_object.start();
     LOG_DEBUG( "DDS device watcher started" );
 }
 
@@ -81,7 +83,7 @@ void dds_device_watcher::stop()
 {
     if( ! is_stopped() )
     {
-        _active_object.stop();
+        //_active_object.stop();
         //_callback_inflight.wait_until_empty();
         LOG_DEBUG( "DDS device watcher stopped" );
     }
