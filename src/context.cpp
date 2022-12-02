@@ -217,19 +217,19 @@ namespace librealsense
             }
             if( ! _dds_participant->is_valid() )
                 _dds_participant->init(
-                    utilities::json::get< int >( settings, "dds-domain", 0 ),
-                    utilities::json::get< std::string >( settings, "dds-participant-name", "librealsense" ) );
+                    0, //utilities::json::get< int >( settings, "dds-domain", 0 ),
+                    "librealsense" ); // utilities::json::get< std::string >( settings, "dds-participant-name", "librealsense" ) );
             //if( ! _dds_participant.instance()->is_valid() )
             //{
             //    _dds_participant->init(
             //        utilities::json::get< int >( settings, "dds-domain", 0 ),
             //        utilities::json::get< std::string >( settings, "dds-participant-name", "librealsense" ) );
             //}
-            else if( utilities::json::has_value( settings, "dds-domain" )
-                     || utilities::json::has_value( settings, "dds-participant-name" ) )
-            {
-                LOG_WARNING( "DDS participant has already been created; ignoring DDS settings" );
-            }
+            //else if( utilities::json::has_value( settings, "dds-domain" )
+            //         || utilities::json::has_value( settings, "dds-participant-name" ) )
+            //{
+            //    LOG_WARNING( "DDS participant has already been created; ignoring DDS settings" );
+            //}
             //_dds_watcher = _dds_watcher_singleton.lock();
             if( ! _dds_watcher )
             {
