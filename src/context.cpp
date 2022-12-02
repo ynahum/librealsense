@@ -166,7 +166,7 @@ namespace librealsense
             //_dds_participant = _dds_participant_singleton.lock();
             if( ! _dds_participant )
             {
-                _dds_participant = std::make_shared< realdds::dds_participant >();
+                //_dds_participant = std::make_shared< realdds::dds_participant >();
                 //_dds_participant_singleton = _dds_participant;
             }
             //if( ! _dds_participant->is_valid() )
@@ -212,7 +212,7 @@ namespace librealsense
             //_dds_participant = _dds_participant_singleton.lock();
             if( ! _dds_participant )
             {
-                _dds_participant = std::make_shared< realdds::dds_participant >();
+                //_dds_participant = std::make_shared< realdds::dds_participant >();
                 //_dds_participant_singleton = _dds_participant;
             }
             //if( ! _dds_participant->is_valid() )
