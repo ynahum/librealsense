@@ -206,7 +206,7 @@ namespace librealsense
         assert( _device_watcher->is_stopped() );
 
 #ifdef BUILD_WITH_DDS
-        if( utilities::json::get< bool >( settings, "dds-discovery", true ) )
+        if( 0 /*utilities::json::get< bool >(settings, "dds-discovery", true)*/ )
         {
             std::cout << "participant 2" << std::endl;
             //_dds_participant = _dds_participant_singleton.lock();
