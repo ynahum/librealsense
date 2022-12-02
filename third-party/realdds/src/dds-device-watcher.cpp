@@ -99,6 +99,7 @@ void dds_device_watcher::init()
 {
     if( ! _listener )
         _participant->create_listener( &_listener )->on_writer_removed( [this]( dds_guid guid, char const * ) {
+#if 0
             std::shared_ptr< dds_device > device;
             {
                 std::lock_guard< std::mutex > lock( _devices_mutex );
@@ -117,6 +118,7 @@ void dds_device_watcher::init()
                 // sort of invalid state in DDS. The thread will get killed and we won't get any notification of the
                 // remote participant getting removed... and the process will even hang on exit.
             } ).detach();
+#endif
         } );
 
     if( ! _device_info_topic->is_running() )
