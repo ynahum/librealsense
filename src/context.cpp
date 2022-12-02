@@ -20,6 +20,7 @@
 #include "environment.h"
 #include "context.h"
 #include "fw-update/fw-update-factory.h"
+
 #ifdef BUILD_WITH_DDS
 #include <realdds/dds-device-watcher.h>
 #include <realdds/dds-participant.h>
@@ -162,19 +163,19 @@ namespace librealsense
             _backend = platform::create_backend();
 #ifdef BUILD_WITH_DDS
             std::cout << "participant 1" << std::endl;
-            _dds_participant = _dds_participant_singleton.lock();
+            //_dds_participant = _dds_participant_singleton.lock();
             if( ! _dds_participant )
             {
                 _dds_participant = std::make_shared< realdds::dds_participant >();
-                _dds_participant_singleton = _dds_participant;
+                //_dds_participant_singleton = _dds_participant;
             }
             if( ! _dds_participant->is_valid() )
                 _dds_participant->init( 0, "librealsense" );
-            _dds_watcher = _dds_watcher_singleton.lock();
+            //_dds_watcher = _dds_watcher_singleton.lock();
             if( ! _dds_watcher )
             {
                 _dds_watcher = std::make_shared< realdds::dds_device_watcher >( _dds_participant );
-                _dds_watcher_singleton = _dds_watcher;
+                //_dds_watcher_singleton = _dds_watcher;
             }
 #endif //BUILD_WITH_DDS
             break;
@@ -208,11 +209,11 @@ namespace librealsense
         if( utilities::json::get< bool >( settings, "dds-discovery", true ) )
         {
             std::cout << "participant 2" << std::endl;
-            _dds_participant = _dds_participant_singleton.lock();
+            //_dds_participant = _dds_participant_singleton.lock();
             if( ! _dds_participant )
             {
                 _dds_participant = std::make_shared< realdds::dds_participant >();
-                _dds_participant_singleton = _dds_participant;
+                //_dds_participant_singleton = _dds_participant;
             }
             if( ! _dds_participant->is_valid() )
                 _dds_participant->init(
@@ -229,11 +230,11 @@ namespace librealsense
             {
                 LOG_WARNING( "DDS participant has already been created; ignoring DDS settings" );
             }
-            _dds_watcher = _dds_watcher_singleton.lock();
+            //_dds_watcher = _dds_watcher_singleton.lock();
             if( ! _dds_watcher )
             {
                 _dds_watcher = std::make_shared< realdds::dds_device_watcher >( _dds_participant );
-                _dds_watcher_singleton = _dds_watcher;
+                //_dds_watcher_singleton = _dds_watcher;
             }
             //_dds_watcher.instance( _dds_participant.get() );
 
