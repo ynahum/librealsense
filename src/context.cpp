@@ -169,8 +169,8 @@ namespace librealsense
                 _dds_participant = std::make_shared< realdds::dds_participant >();
                 //_dds_participant_singleton = _dds_participant;
             }
-            if( ! _dds_participant->is_valid() )
-                _dds_participant->init( 0, "librealsense" );
+            //if( ! _dds_participant->is_valid() )
+            //    _dds_participant->init( 0, "librealsense" );
             //_dds_watcher = _dds_watcher_singleton.lock();
             if( ! _dds_watcher )
             {
@@ -215,21 +215,21 @@ namespace librealsense
                 _dds_participant = std::make_shared< realdds::dds_participant >();
                 //_dds_participant_singleton = _dds_participant;
             }
-            if( ! _dds_participant->is_valid() )
-                _dds_participant->init(
-                    0, //utilities::json::get< int >( settings, "dds-domain", 0 ),
-                    "librealsense" ); // utilities::json::get< std::string >( settings, "dds-participant-name", "librealsense" ) );
+            //if( ! _dds_participant->is_valid() )
+            //    _dds_participant->init(
+            //        utilities::json::get< int >( settings, "dds-domain", 0 ),
+            //        utilities::json::get< std::string >( settings, "dds-participant-name", "librealsense" ) );
             //if( ! _dds_participant.instance()->is_valid() )
             //{
             //    _dds_participant->init(
             //        utilities::json::get< int >( settings, "dds-domain", 0 ),
             //        utilities::json::get< std::string >( settings, "dds-participant-name", "librealsense" ) );
             //}
-            //else if( utilities::json::has_value( settings, "dds-domain" )
-            //         || utilities::json::has_value( settings, "dds-participant-name" ) )
-            //{
-            //    LOG_WARNING( "DDS participant has already been created; ignoring DDS settings" );
-            //}
+            else if( utilities::json::has_value( settings, "dds-domain" )
+                     || utilities::json::has_value( settings, "dds-participant-name" ) )
+            {
+                LOG_WARNING( "DDS participant has already been created; ignoring DDS settings" );
+            }
             //_dds_watcher = _dds_watcher_singleton.lock();
             if( ! _dds_watcher )
             {
