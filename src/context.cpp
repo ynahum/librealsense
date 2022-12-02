@@ -174,7 +174,7 @@ namespace librealsense
             //_dds_watcher = _dds_watcher_singleton.lock();
             if( ! _dds_watcher )
             {
-                _dds_watcher = std::make_shared< realdds::dds_device_watcher >( _dds_participant );
+                //_dds_watcher = std::make_shared< realdds::dds_device_watcher >( _dds_participant );
                 //_dds_watcher_singleton = _dds_watcher;
             }
 #endif //BUILD_WITH_DDS
@@ -233,7 +233,7 @@ namespace librealsense
             //_dds_watcher = _dds_watcher_singleton.lock();
             if( ! _dds_watcher )
             {
-                _dds_watcher = std::make_shared< realdds::dds_device_watcher >( _dds_participant );
+                //_dds_watcher = std::make_shared< realdds::dds_device_watcher >( _dds_participant );
                 //_dds_watcher_singleton = _dds_watcher;
             }
             //_dds_watcher.instance( _dds_participant.get() );
