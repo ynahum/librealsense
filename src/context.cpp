@@ -825,7 +825,7 @@ namespace librealsense
 
         if ( _device_watcher )
             _device_watcher->stop(); 
-#if 0 //def BUILD_WITH_DDS
+#ifdef BUILD_WITH_DDS
         if( _dds_watcher )
             _dds_watcher->stop();
 #endif //BUILD_WITH_DDS
