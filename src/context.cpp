@@ -31,8 +31,8 @@
 #include <realdds/topics/device-info/device-info-msg.h>
 #include <realdds/topics/image/image-msg.h>
 
-std::weak_ptr< realdds::dds_participant > librealsense::context::_dds_participant_singleton;
-std::weak_ptr< realdds::dds_device_watcher > librealsense::context::_dds_watcher_singleton;
+static std::weak_ptr< realdds::dds_participant > _dds_participant_singleton;
+static std::weak_ptr< realdds::dds_device_watcher > _dds_watcher_singleton;
 
 #endif //BUILD_WITH_DDS
 
