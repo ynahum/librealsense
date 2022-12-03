@@ -40,7 +40,7 @@ namespace realdds
 
                 eProsima_user_DllExport device_infoPubSubType();
 
-                eProsima_user_DllExport virtual ~device_infoPubSubType();
+                eProsima_user_DllExport virtual ~device_infoPubSubType() override;
 
                 eProsima_user_DllExport virtual bool serialize(
                         void* data,
