@@ -54,8 +54,8 @@ jobs:
         LRS_SRC_DIR=$(pwd)   
         cd ${{env.WIN_BUILD_DIR}}
         pwd
-        ls        
-        cmake ${LRS_SRC_DIR} -G "Visual Studio 16 2019" -DPYTHON_EXECUTABLE=${{env.PYTHON_PATH}} -DBUILD_PYTHON_BINDINGS=true -DBUILD_UNIT_TESTS=false -DBUILD_LEGACY_LIVE_TEST=true -DBUILD_EXAMPLES=false -DBUILD_TOOLS=true -DBUILD_WITH_TM2=false -DFORCE_RSUSB_BACKEND=true -DBUILD_WITH_DDS=true
+        ls
+        cmake ${LRS_SRC_DIR} -G "Visual Studio 16 2019" -DBUILD_LEGACY_LIVE_TEST=true -DBUILD_EXAMPLES=false -DBUILD_TOOLS=false -DBUILD_WITH_TM2=false -DFORCE_RSUSB_BACKEND=true -DBUILD_WITH_DDS=true -DBUILD_SHARED_LIBS=false
 
     - name: Build
       # Build your program with the given configuration
@@ -75,7 +75,7 @@ jobs:
       run: |
        export LRS_LOG_LEVEL="DEBUG";
        cd  ${{env.WIN_BUILD_DIR}}/${{env.LRS_RUN_CONFIG}}
-       ls
+       ls -la
        ./live-test.exe -d yes -i [software-device]  
        
     - name: Upload RS log artifact
