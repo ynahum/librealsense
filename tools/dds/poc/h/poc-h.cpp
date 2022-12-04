@@ -19,6 +19,9 @@
 #include <tclap/UnlabeledValueArg.h>
 
 
+#define ENABLE_TIME_SYNC() 0
+#define CREATE_CONTROL_PUB_SUB() 0
+
 using realdds::dds_nsec;
 using realdds::dds_time;
 using realdds::timestr;
@@ -106,11 +109,17 @@ int main( int argc, char** argv ) try
         }
     }
 
+    LOG_DEBUG( "domain id: " << domain);
 
     auto participant = std::make_shared< realdds::dds_participant >();
-    participant->init( domain, "poc-h" );
+    LOG_DEBUG( "init participant");
+    participant->init( domain, "SafeDDS_Intel_Realsense_PoC" );
+    dds_nsec time_offset = 0;
 
+#if CREATE_CONTROL_PUB_SUB()
+    LOG_DEBUG( "   create h2e writer");
     poc::op_writer h2e( participant, "h2e" );
+    LOG_DEBUG( "   h2e writer wait for reader");
     h2e.wait_for_readers( 1 );
     if( command_arg.isSet() )
     {
@@ -124,9 +133,11 @@ int main( int argc, char** argv ) try
         exit( 1 );
     }
 
+    LOG_DEBUG( "   create e2h reader");
     poc::op_reader e2h( participant, "e2h" );
-
-    auto time_offset = calc_time_offset( h2e, e2h );
+#if ENABLE_TIME_SYNC()
+    time_offset = calc_time_offset( h2e, e2h );
+#endif
 
 #if 0
     // Tell E to start
@@ -135,6 +146,9 @@ int main( int argc, char** argv ) try
     auto status = utilities::json::get< int64_t >( msg, "status" );
     if( status != 0 )
         LOG_FATAL( "Got bad status " << status << " from E in response to 'start' op" );
+
+#endif
+
 #endif
 
     struct framedata
@@ -175,15 +189,20 @@ int main( int argc, char** argv ) try
 
     using namespace std::placeholders;  // _1, etc...
 
-    poc::stream_reader depth( participant, "depth" );
+    LOG_DEBUG( "   create depth stream reader");
+    poc::stream_reader depth( participant, "realsense/depth" );
     auto depth_data = std::make_shared< framedata >();
+    LOG_DEBUG( "   register depth callback on_data");
     depth.on_data( std::bind( process_frame, depth_data, _1 ));
+    LOG_DEBUG( "   wait for writers");
     depth.wait_for_writers( 1, std::chrono::seconds( 3 ) );
 
     // Collect frame data
+    LOG_DEBUG( "   sleep for 3 seconds");
     std::this_thread::sleep_for( std::chrono::seconds( 3 ) );
 
     // Dump it all out somehow
+    LOG_DEBUG( "   TODO: dump data somehow");
 
     return EXIT_SUCCESS;
 }
