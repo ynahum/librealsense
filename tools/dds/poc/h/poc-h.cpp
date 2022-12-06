@@ -195,7 +195,7 @@ int main( int argc, char** argv ) try
     LOG_DEBUG( "   register depth callback on_data");
     depth.on_data( std::bind( process_frame, depth_data, _1 ));
     LOG_DEBUG( "   wait for writers");
-    depth.wait_for_writers( 1, std::chrono::seconds( 3 ) );
+    depth.wait_for_writers( 1, std::chrono::seconds( 300 ) );
 
     // Collect frame data
     LOG_DEBUG( "   sleep for 3 seconds");

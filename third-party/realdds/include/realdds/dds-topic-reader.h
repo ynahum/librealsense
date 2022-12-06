@@ -66,7 +66,7 @@ public:
 
     public:
         qos( eprosima::fastdds::dds::ReliabilityQosPolicyKind reliability
-               = eprosima::fastdds::dds::RELIABLE_RELIABILITY_QOS,  // default
+               = eprosima::fastdds::dds::BEST_EFFORT_RELIABILITY_QOS,  // default
              eprosima::fastdds::dds::DurabilityQosPolicyKind durability
                = eprosima::fastdds::dds::VOLATILE_DURABILITY_QOS );  // default is transient local
     };
