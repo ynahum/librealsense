@@ -73,13 +73,17 @@ int main( int argc, char** argv ) try
     TCLAP::SwitchArg debug_arg( "", "debug", "Enable debug logging", false );
     TCLAP::ValueArg< realdds::dds_domain_id > domain_arg( "d", "domain", "select domain ID to listen on", false, 0, "0-232" );
     TCLAP::SwitchArg op_pub_sub_arg( "o", "op-pub-sub", "create op pub and sub", false );
-    TCLAP::ValueArg< int > tims_sync_iter_arg( "s", "time-sync", "number of iterations", false, 10, "0-inf" );
+    TCLAP::ValueArg< int > time_sync_iter_arg( "s", "time-sync", "number of iterations", false, 10, "0-inf" );
     TCLAP::UnlabeledValueArg< std::string > command_arg( "command", "command to send", false, "", "string" );
-    cmd.add( domain_arg );
-    cmd.add( debug_arg );
-    cmd.add( command_arg );
+    TCLAP::ValueArg< int > stream_run_time( "r", "run-time", "streaming time in seconds", false, 30, "0-inf" );
+
+    cmd.add(domain_arg);
+    cmd.add(debug_arg);
+    cmd.add(command_arg);
     cmd.add(op_pub_sub_arg);
-    cmd.add( tims_sync_iter_arg );
+    cmd.add(time_sync_iter_arg);
+    cmd.add(stream_run_time);
+    
     cmd.parse( argc, argv );
 
     // Configure the same logger as librealsense, and default to only errors by default...
@@ -110,33 +114,22 @@ int main( int argc, char** argv ) try
         }
     }
 
-    LOG_DEBUG( "domain id: " << domain);
-
     bool create_op_pub_sub = false;
     if (op_pub_sub_arg.isSet())
     {
         create_op_pub_sub = true;
     }
 
-    bool time_sync_enabled = false;
-    int time_sync_num_of_iterations = 0;
-    if (tims_sync_iter_arg.isSet())
-    {
-        time_sync_enabled = true;
-        time_sync_num_of_iterations = tims_sync_iter_arg.getValue();
-    }
-
-
     auto participant = std::make_shared< realdds::dds_participant >();
-    LOG_DEBUG( "init participant");
-    participant->init( domain, "SafeDDS_Intel_Realsense_PoC" );
+    LOG_INFO( "init participant");
+    participant->init( domain, "POC_domain" );
     dds_nsec time_offset = 0;
 
     if (create_op_pub_sub) 
     {
-        LOG_DEBUG( "   create h2e writer");
+        LOG_INFO( "   create h2e writer");
         poc::op_writer h2e( participant, "realsense/h2e" );
-        LOG_DEBUG( "   h2e writer wait for reader");
+        LOG_INFO( "   h2e writer wait for reader");
         h2e.wait_for_readers( 1, std::chrono::seconds( 300 ) );
         if( command_arg.isSet() )
         {
@@ -150,10 +143,11 @@ int main( int argc, char** argv ) try
             exit( 1 );
         }
 
-        LOG_DEBUG( "   create e2h reader");
+        LOG_INFO( "   create e2h reader");
         poc::op_reader e2h( participant, "realsense/e2h" );
-        if (time_sync_enabled)
-            time_offset = calc_time_offset( h2e, e2h, time_sync_num_of_iterations );
+
+        if (time_sync_iter_arg.isSet())
+            time_offset = calc_time_offset( h2e, e2h, time_sync_iter_arg.getValue());
 
 #if 0
         // Tell E to start
@@ -204,20 +198,23 @@ int main( int argc, char** argv ) try
 
     using namespace std::placeholders;  // _1, etc...
 
-    LOG_DEBUG( "   create depth stream reader");
+    LOG_INFO( "   create depth stream reader");
     poc::stream_reader depth( participant, "realsense/depth" );
     auto depth_data = std::make_shared< framedata >();
-    LOG_DEBUG( "   register depth callback on_data");
+    LOG_INFO( "   register depth callback on_data");
     depth.on_data( std::bind( process_frame, depth_data, _1 ));
-    LOG_DEBUG( "   wait for writers");
+    LOG_INFO( "   wait for writers");
     depth.wait_for_writers( 1, std::chrono::seconds( 300 ) );
 
     // Collect frame data
-    LOG_DEBUG( "   sleep for 3 seconds");
-    std::this_thread::sleep_for( std::chrono::seconds( 3 ) );
+    LOG_INFO( "   got writers. streaming should start");
+
+    LOG_INFO( "   main thread goes to sleep for " << stream_run_time.getValue() << " seconds");
+    std::this_thread::sleep_for( std::chrono::seconds( stream_run_time.getValue() ) );
 
     // Dump it all out somehow
-    LOG_DEBUG( "   TODO: dump data somehow");
+    LOG_INFO( "   TODO: another time offset check and compare");
+    LOG_INFO( "   TODO: dump data somehow");
 
     return EXIT_SUCCESS;
 }
