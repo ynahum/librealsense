@@ -19,23 +19,20 @@
 #include <tclap/UnlabeledValueArg.h>
 
 
-#define ENABLE_TIME_SYNC() 0
-#define CREATE_CONTROL_PUB_SUB() 0
-
 using realdds::dds_nsec;
 using realdds::dds_time;
 using realdds::timestr;
 
 
 dds_nsec
-calc_time_offset( poc::op_writer & h2e, poc::op_reader & e2h, int const n_reps = 5 )
+calc_time_offset( poc::op_writer & h2e, poc::op_reader & e2h, int const n_reps = 10 )
 {
     int64_t avg_time_offset = 0;
     for( uint64_t i = 0; i < n_reps; ++i )
     {
         auto t0_ = realdds::now().to_ns();
         h2e.write( poc::op_payload::SYNC, i, t0_ );
-        auto data = e2h.read( std::chrono::seconds( 3 ) );
+        auto data = e2h.read( std::chrono::seconds( 300 ) );
         //dds_nsec t0_ = data.msg._data[0];  // before H app send
         dds_nsec t0 = data.msg._data[1];   // "originate" H DDS send time
         dds_nsec t1 = data.msg._data[2];   // "receive" E receive time
@@ -75,10 +72,14 @@ int main( int argc, char** argv ) try
     TCLAP::CmdLine cmd( "POC host computer", ' ' );
     TCLAP::SwitchArg debug_arg( "", "debug", "Enable debug logging", false );
     TCLAP::ValueArg< realdds::dds_domain_id > domain_arg( "d", "domain", "select domain ID to listen on", false, 0, "0-232" );
+    TCLAP::SwitchArg op_pub_sub_arg( "o", "op-pub-sub", "create op pub and sub", false );
+    TCLAP::ValueArg< int > tims_sync_iter_arg( "s", "time-sync", "number of iterations", false, 10, "0-inf" );
     TCLAP::UnlabeledValueArg< std::string > command_arg( "command", "command to send", false, "", "string" );
     cmd.add( domain_arg );
     cmd.add( debug_arg );
     cmd.add( command_arg );
+    cmd.add(op_pub_sub_arg);
+    cmd.add( tims_sync_iter_arg );
     cmd.parse( argc, argv );
 
     // Configure the same logger as librealsense, and default to only errors by default...
@@ -111,45 +112,59 @@ int main( int argc, char** argv ) try
 
     LOG_DEBUG( "domain id: " << domain);
 
+    bool create_op_pub_sub = false;
+    if (op_pub_sub_arg.isSet())
+    {
+        create_op_pub_sub = true;
+    }
+
+    bool time_sync_enabled = false;
+    int time_sync_num_of_iterations = 0;
+    if (tims_sync_iter_arg.isSet())
+    {
+        time_sync_enabled = true;
+        time_sync_num_of_iterations = tims_sync_iter_arg.getValue();
+    }
+
+
     auto participant = std::make_shared< realdds::dds_participant >();
     LOG_DEBUG( "init participant");
     participant->init( domain, "SafeDDS_Intel_Realsense_PoC" );
     dds_nsec time_offset = 0;
 
-#if CREATE_CONTROL_PUB_SUB()
-    LOG_DEBUG( "   create h2e writer");
-    poc::op_writer h2e( participant, "h2e" );
-    LOG_DEBUG( "   h2e writer wait for reader");
-    h2e.wait_for_readers( 1 );
-    if( command_arg.isSet() )
+    if (create_op_pub_sub) 
     {
-        if( command_arg.getValue() == "exit" )
+        LOG_DEBUG( "   create h2e writer");
+        poc::op_writer h2e( participant, "realsense/h2e" );
+        LOG_DEBUG( "   h2e writer wait for reader");
+        h2e.wait_for_readers( 1, std::chrono::seconds( 300 ) );
+        if( command_arg.isSet() )
         {
-            h2e.write( poc::op_payload::EXIT, 0 );
-            h2e.wait_for_readers( 0 );
-            exit( 0 );
+            if( command_arg.getValue() == "exit" )
+            {
+                h2e.write( poc::op_payload::EXIT, 0 );
+                h2e.wait_for_readers( 0 );
+                exit( 0 );
+            }
+            LOG_ERROR( "Invalid command: " << command_arg.getValue() );
+            exit( 1 );
         }
-        LOG_ERROR( "Invalid command: " << command_arg.getValue() );
-        exit( 1 );
-    }
 
-    LOG_DEBUG( "   create e2h reader");
-    poc::op_reader e2h( participant, "e2h" );
-#if ENABLE_TIME_SYNC()
-    time_offset = calc_time_offset( h2e, e2h );
-#endif
+        LOG_DEBUG( "   create e2h reader");
+        poc::op_reader e2h( participant, "realsense/e2h" );
+        if (time_sync_enabled)
+            time_offset = calc_time_offset( h2e, e2h, time_sync_num_of_iterations );
 
 #if 0
-    // Tell E to start
-    h2e.write( { { "op", "start" }, { "id", 0 } } );
-    auto msg = e2h.read().msg.json_data();  // wait for confirmation
-    auto status = utilities::json::get< int64_t >( msg, "status" );
-    if( status != 0 )
-        LOG_FATAL( "Got bad status " << status << " from E in response to 'start' op" );
+        // Tell E to start
+        h2e.write( { { "op", "start" }, { "id", 0 } } );
+        auto msg = e2h.read().msg.json_data();  // wait for confirmation
+        auto status = utilities::json::get< int64_t >( msg, "status" );
+        if( status != 0 )
+            LOG_FATAL( "Got bad status " << status << " from E in response to 'start' op" );
 
 #endif
-
-#endif
+    }
 
     struct framedata
     {
