@@ -96,7 +96,7 @@ calc_time_offset( poc::op_writer & h2e, poc::op_reader & e2h, int const n_reps =
     // NOTE: the time-offset is what needs to be added to the HOST timestamp in order to arrive at the EMBEDDED time.
     // Obviously, negating it will yield the other direction...
     //
-    avg_time_offset /= (n_reps-1);
+    avg_time_offset /= -(n_reps-1);
     LOG_INFO( "Average time-offset= " << timestr( avg_time_offset, timestr::rel ) );
     return avg_time_offset;
 }
@@ -159,7 +159,7 @@ int main( int argc, char** argv ) try
 
     auto participant = std::make_shared< realdds::dds_participant >();
     LOG_INFO( "init participant");
-    participant->init( domain, "POC_domain" );
+    participant->init( domain, "poc-h" );
     dds_nsec time_offset = 0;
 
     if (create_op_pub_sub) 
